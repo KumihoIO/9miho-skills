@@ -7,5 +7,12 @@
     "url": "https://kumiho.io"
   },
   "license": "MIT",
-  "homepage": "https://github.com/KumihoIO/9miho"
+  "homepage": "https://github.com/KumihoIO/9miho",
+  "skills": [
+    "./miho-generate",
+    "./miho-library",
+    "./miho-photoshoot",
+    "./miho-storyboard",
+    "./miho-subject"
+  ]
 }
