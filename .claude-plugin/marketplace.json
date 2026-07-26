@@ -1,5 +1,6 @@
 {
   "name": "miho",
+  "description": "Agent skills for 9miho — the node canvas where image, asset, reference and video stay connected by provenance. These skills are triggers only: the guidance itself is served by your own 9miho installation over MCP, so it always matches that server's node catalog and spend rules. Requires a running 9miho with miho-mcp configured.",
   "owner": {
     "name": "Kumiho",
     "url": "https://kumiho.io"
