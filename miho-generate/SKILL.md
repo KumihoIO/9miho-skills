@@ -42,9 +42,11 @@ is up — 9miho stores every asset there, so without it nothing runs.
 
 ## Two rules that hold even before you fetch anything
 
-**Never confirm spend on the user's behalf.** `run_graph` refuses a graph
-containing billable nodes unless `confirm_spend=true`, and names them. That
-refusal is a question *for the user*.
+**You cannot confirm spend. Only the user can.** `run_graph` refuses a graph
+containing billable nodes unless `confirm_spend=true`, and the refusal carries
+an itemized estimate. That flag is a fail-fast, not an authorization: the
+server shows the user a confirm card in their canvas and runs nothing until
+they accept it there.
 
 **`list_catalog` is the only truth about node types.** Never name a type you
 have not listed this session.

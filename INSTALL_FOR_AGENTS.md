@@ -42,6 +42,8 @@ content, not names alone. You are set up.
 ## Do not
 
 - Do not guess node type names. `list_catalog` is the only truth.
-- Do not pass `confirm_spend=true` without the user saying yes in words.
+- Do not pass `confirm_spend=true` without telling the user what it costs
+  first. It does not authorize the spend either way — the server asks them
+  on a confirm card in the canvas, and only their answer releases the run.
 - Do not copy guidance out of `get_skill` into your own notes for reuse
   later — it is version-matched to that server and will be wrong elsewhere.
