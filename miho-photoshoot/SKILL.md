@@ -33,7 +33,7 @@ miho-mcp is not configured. Add it to your MCP config:
 {"mcpServers": {"miho": {
   "command": "uv",
   "args": ["run", "--directory", "<path-to-9miho>", "miho-mcp"],
-  "env": {"MIHO_SERVER_URL": "http://127.0.0.1:8000"}
+  "env": {"MIHO_SERVER_URL": "http://127.0.0.1:9999"}
 }}}
 ```
 

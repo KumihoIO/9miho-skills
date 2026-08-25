@@ -1,11 +1,11 @@
 ---
-name: miho-generate
-description: Compose and run 9miho flows that produce images and video — routing a brief to the right node types, validating before spending, and surfacing the spend confirmation rather than answering it.
-tags: [9miho, generate, image, video, movie, edit, subject, flow, spend]
+name: miho-storyteller-production
+description: Produce a Storyteller Moment — read the composed episode context, pin a Direction artifact, compile image/video/dialogue through the generation tools, and let the human answer the spend card.
+tags: [9miho, story, production, video, image, spend, dialogue, direction]
 allowed-tools: mcp__miho__get_skill, mcp__miho__list_skills
 ---
 
-# miho-generate
+# miho-storyteller-production
 
 This is a **pointer**, not the guidance.
 
@@ -18,10 +18,10 @@ expensive.
 ## Do this first
 
 ```
-get_skill(task="generate")
+get_skill(task="storyteller-production")
 ```
 
-Add `detail=` for anything specific — `get_skill(task="generate",
+Add `detail=` for anything specific — `get_skill(task="storyteller-production",
 detail="…")`. The task word is what you are about to do, not a skill name;
 free text is accepted. `list_skills()` shows what this installation has.
 

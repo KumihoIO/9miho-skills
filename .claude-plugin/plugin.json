@@ -1,6 +1,6 @@
 {
   "name": "miho",
-  "version": "0.3.0",
+  "version": "0.4.1",
   "description": "9miho agent skills — image, video, subject identity, photoshoot modes and multi-shot sequences, with provenance.",
   "author": {
     "name": "Kumiho",
@@ -13,6 +13,8 @@
     "./miho-library",
     "./miho-photoshoot",
     "./miho-storyboard",
+    "./miho-storyteller-planning",
+    "./miho-storyteller-production",
     "./miho-subject"
   ]
 }

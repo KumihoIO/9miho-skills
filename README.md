@@ -30,6 +30,8 @@ You also need a running 9miho with `miho-mcp` in your MCP config — see
 | [`miho-library`](./miho-library) | `/miho:miho-library` |
 | [`miho-photoshoot`](./miho-photoshoot) | `/miho:miho-photoshoot` |
 | [`miho-storyboard`](./miho-storyboard) | `/miho:miho-storyboard` |
+| [`miho-storyteller-planning`](./miho-storyteller-planning) | `/miho:miho-storyteller-planning` |
+| [`miho-storyteller-production`](./miho-storyteller-production) | `/miho:miho-storyteller-production` |
 | [`miho-subject`](./miho-subject) | `/miho:miho-subject` |
 
 ## These are pointers
