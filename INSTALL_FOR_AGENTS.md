@@ -7,7 +7,7 @@ working around it.
 ## Step 1 — is 9miho running?
 
 ```bash
-curl -s http://127.0.0.1:8000/api/healthz
+curl -s http://127.0.0.1:9999/api/healthz
 ```
 
 Expect `{"status":"ok"}`. If not, the user must start it (`uv run
