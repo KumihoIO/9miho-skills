@@ -2,7 +2,7 @@
   "$schema": "https://cursor.com/schemas/cursor-plugin/plugin.json",
   "name": "miho",
   "displayName": "9miho Skills",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Triggers for driving 9miho - image, asset, reference, video, Storyteller. Guidance is served by your own 9miho over MCP, version-matched to its catalog and spend rules.",
   "publisher": "KumihoIO",
   "repository": "https://github.com/KumihoIO/9miho-skills",

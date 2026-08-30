@@ -11,8 +11,11 @@ Check the platform path:
 - Windows: `~/.kumiho/apps/9miho/bin/9miho.exe`
 - macOS/Linux: `~/.kumiho/apps/9miho/bin/9miho`
 
-If it is missing, ask the user to install and start 9miho in Kumiho Desktop.
-Do not change an MCP config and do not substitute a private checkout.
+It must be 9miho 0.16.1 or newer. If it is missing or outdated, ask the user
+to install, update, and start 9miho in Kumiho Desktop. The bundled launcher
+checks the required setup capability before invoking it, makes no MCP config
+change on failure, and exits with status 2. Do not substitute a private
+checkout.
 
 ## Step 2 — preview the MCP registration
 

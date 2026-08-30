@@ -22,7 +22,8 @@ locations:
 - macOS/Linux: `~/.kumiho/apps/9miho/bin/9miho`
 
 Open Kumiho Desktop, install 9miho from Apps, and start it. The setup script
-will make no configuration changes if that runtime is missing.
+requires 9miho 0.16.1 or newer. It will make no configuration changes if the
+runtime is missing or does not expose the required setup capability.
 
 The runtime carries the canonical guidance that matches its own server and
 provisions it idempotently when `list_skills()` or `get_skill()` first asks

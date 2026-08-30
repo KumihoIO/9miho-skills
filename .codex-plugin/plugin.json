@@ -1,6 +1,6 @@
 {
   "name": "miho",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Triggers for driving 9miho over miho-mcp; guidance served by the running server.",
   "repository": "https://github.com/KumihoIO/9miho-skills"
 }

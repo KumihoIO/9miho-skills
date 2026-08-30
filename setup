@@ -5,4 +5,8 @@ if [ ! -f "$MIHO_BIN" ]; then
   echo "9miho is not installed. Install or repair it in Kumiho Desktop." >&2
   exit 2
 fi
+if ! "$MIHO_BIN" --help 2>&1 | grep -F -- "--setup-agent-hosts" >/dev/null; then
+  echo "Update 9miho to 0.16.1 or newer in Kumiho Desktop. No config was changed." >&2
+  exit 2
+fi
 exec "$MIHO_BIN" --setup-agent-hosts "$@"

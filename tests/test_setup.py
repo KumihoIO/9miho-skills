@@ -307,7 +307,7 @@ class PublicTreeContractTest(unittest.TestCase):
             json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"],
             json.loads((ROOT / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"],
         ]
-        self.assertEqual(version, "0.4.4")
+        self.assertEqual(version, "0.4.5")
         self.assertEqual(stamps, [version] * len(stamps))
 
     def test_launchers_use_signed_runtime_without_system_python(self) -> None:
@@ -317,6 +317,32 @@ class PublicTreeContractTest(unittest.TestCase):
         self.assertIn("--setup-agent-hosts", windows)
         self.assertNotIn("python", unix.lower())
         self.assertNotIn("python", windows.lower())
+
+    def test_launchers_reject_runtime_without_agent_setup_capability_first(self) -> None:
+        unix = (ROOT / "setup").read_text(encoding="utf-8")
+        windows = (ROOT / "setup.cmd").read_text(encoding="utf-8")
+        refusal = (
+            "Update 9miho to 0.16.1 or newer in Kumiho Desktop. "
+            "No config was changed."
+        )
+
+        self.assertIn('grep -F -- "--setup-agent-hosts"', unix)
+        self.assertIn('findstr /L /C:"--setup-agent-hosts"', windows)
+        self.assertIn(refusal, unix)
+        self.assertIn(refusal, windows)
+        self.assertLess(
+            unix.index('"$MIHO_BIN" --help'),
+            unix.index('exec "$MIHO_BIN" --setup-agent-hosts'),
+        )
+        self.assertLess(
+            windows.index('"%MIHO_EXE%" --help'),
+            windows.index('"%MIHO_EXE%" --setup-agent-hosts'),
+        )
+
+    def test_public_install_docs_require_9miho_0161_or_newer(self) -> None:
+        for name in ("README.md", "INSTALL.md", "INSTALL_FOR_AGENTS.md"):
+            body = (ROOT / name).read_text(encoding="utf-8")
+            self.assertIn("0.16.1 or newer", body, name)
 
     def test_public_storyteller_trigger_includes_webtoon_production(self) -> None:
         body = (ROOT / "miho-storyteller-production" / "SKILL.md").read_text(encoding="utf-8")
