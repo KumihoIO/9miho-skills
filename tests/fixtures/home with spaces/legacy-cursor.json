@@ -1,0 +1,20 @@
+{
+  "theme": "dark",
+  "mcpServers": {
+    "other": {
+      "command": "other-mcp"
+    },
+    "miho": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "C:\\Source Trees\\Private 9miho",
+        "miho-mcp"
+      ],
+      "env": {
+        "MIHO_SERVER_URL": "http://127.0.0.1:9999"
+      }
+    }
+  }
+}

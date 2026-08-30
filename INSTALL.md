@@ -1,72 +1,103 @@
 # Install
 
-Two halves: the skills (this repo) and the tool surface (`miho-mcp`, which
-serves the actual guidance).
+The public installation has two pieces: the trigger skills in this repo and
+the 9miho MCP runtime installed by Kumiho Desktop.
 
-## 1. Skills
+## 1. Install the trigger skills
 
 ```bash
 npx skills add KumihoIO/9miho-skills
 ```
 
 Alternatives: `gh skill install KumihoIO/9miho-skills`, or in Claude Code
-`/plugin marketplace add KumihoIO/9miho-skills` then
+`/plugin marketplace add KumihoIO/9miho-skills` followed by
 `/plugin install miho@miho`.
 
-## 2. A running 9miho
+## 2. Install and start 9miho in Kumiho Desktop
 
-Follow the 9miho README. You need the server answering on `/api/healthz`,
-and Kumiho reachable — 9miho stores every asset there, so without Kumiho it
-has no database and nothing runs.
+Kumiho Desktop installs the signed MCP-capable runtime at one of these fixed
+locations:
 
-## 3. miho-mcp in your MCP config
+- Windows: `~/.kumiho/apps/9miho/bin/9miho.exe`
+- macOS/Linux: `~/.kumiho/apps/9miho/bin/9miho`
 
-Fastest path ? run the bundled setup from this repo; it detects installed
-hosts and registers the same entry idempotently:
+Open Kumiho Desktop, install 9miho from Apps, and start it. The setup script
+will make no configuration changes if that runtime is missing.
+
+The runtime carries the canonical guidance that matches its own server and
+provisions it idempotently when `list_skills()` or `get_skill()` first asks
+for it. A normal installation needs neither a 9miho source checkout nor a
+separate guidance-seeding command.
+
+## 3. Register the installed MCP runtime
+
+Run the setup bundled with this repo:
 
 ```bash
-./setup            # macOS / Linux
-setup.cmd          # Windows
+./setup                 # macOS / Linux
+setup.cmd               # Windows
 ```
 
-Prefer by hand? The server entry is the same everywhere; only the file it
-lives in differs.
+It writes the same stdio contract for Cursor, OpenCode, Codex, and Claude
+Code:
 
 ```json
 {
-  "mcpServers": {
-    "miho": {
-      "command": "uv",
-      "args": ["run", "--directory", "/path/to/9miho", "miho-mcp"],
-      "env": { "MIHO_SERVER_URL": "http://127.0.0.1:9999" }
-    }
-  }
+  "command": "<HOME>/.kumiho/apps/9miho/bin/9miho",
+  "args": ["--mcp-stdio"],
+  "env": { "MIHO_SERVER_URL": "http://127.0.0.1:9999" }
 }
 ```
 
-| Host | Where it goes |
-| --- | --- |
-| Cursor | `~/.cursor/mcp.json`, inside `"mcpServers"` |
-| OpenCode | `~/.config/opencode/opencode.json`, as `"mcp": {"miho": {"type": "local", "command": ["uv", "run", "--directory", "/path/to/9miho", "miho-mcp"], "environment": {"MIHO_SERVER_URL": "http://127.0.0.1:9999"}, "enabled": true}}` |
-| Codex | `~/.codex/config.toml`: `[mcp_servers.miho]` with `command = "uv"`, `args = ["run", "--directory", "/path/to/9miho", "miho-mcp"]`, and `[mcp_servers.miho.env]` carrying `MIHO_SERVER_URL` |
-| Claude Code | `claude mcp add -e MIHO_SERVER_URL=http://127.0.0.1:9999 miho -- uv run --directory /path/to/9miho miho-mcp` |
+Windows uses `9miho.exe`; setup resolves the real absolute path before
+writing it. OpenCode uses the equivalent command-array form.
 
-After editing a config, restart that host so the server list reloads.
-
-## 4. Seed the guidance (once per installation)
-
-In the 9miho checkout:
+Preview or audit without changing anything:
 
 ```bash
-uv run python scripts/ingest_skills.py
+./setup --dry-run
+./setup --check
 ```
 
-This writes the skill pack into that installation's Kumiho, where
-`get_skill` reads it. Re-running is idempotent — it creates a new revision
-rather than duplicating.
+`--check` returns 1 when a supported host needs registration or migration and
+2 when setup cannot proceed safely. `--dry-run` reports planned changes but
+still returns a nonzero status for conflicts or invalid configuration.
 
-## Check it worked
+### Safe migration boundary
 
-Ask your agent to call `list_skills()`. You should get seven skills and a set
-of task words. If the tool is missing, step 3 did not take. If it returns an
-empty pack with a hint about `ingest_skills.py`, step 4 did not.
+- A missing `miho` entry may be added.
+- An exact entry already using the installed runtime is left byte-identical.
+- The exact legacy entry written by setup 0.4.2 or earlier is backed up, then
+  migrated from `uv run --directory … miho-mcp` to the installed runtime.
+- Any other existing `miho` entry is treated as user-owned and left untouched.
+- Invalid JSON/TOML is reported and left untouched.
+
+Backups are written beside the original configuration with a
+`.9miho-setup*.bak` suffix before a real write.
+
+| Host | Configuration |
+| --- | --- |
+| Cursor | `~/.cursor/mcp.json`, inside `mcpServers.miho` |
+| OpenCode | `$XDG_CONFIG_HOME/opencode/opencode.json` or `~/.config/opencode/opencode.json`, inside `mcp.miho` |
+| Codex | `$CODEX_HOME/config.toml` or `~/.codex/config.toml`, as `[mcp_servers.miho]` plus its env table |
+| Claude Code | User or project entry in `~/.claude.json`; a new entry is added with `claude mcp add-json --scope user` |
+
+Restart each host after setup so it reloads MCP servers.
+
+## 4. Confirm first retrieval
+
+Ask the agent to call `list_skills()`, then `get_skill(task="image")`. The
+first request may provision the bundled pack before returning it. A 409 means
+9miho found a user-managed Kumiho item with the same identity and deliberately
+refused to overwrite it; review that item instead of forcing a replacement.
+
+## Development source mode (explicit opt-in)
+
+Maintainers working from a real 9miho checkout can opt in explicitly:
+
+```bash
+python scripts/setup.py --source-checkout "/path/with spaces/to/9miho"
+```
+
+This mode requires `uv` and is for source development only. It is not an
+installation or recovery path for Kumiho Desktop users.

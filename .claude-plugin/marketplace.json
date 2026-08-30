@@ -10,7 +10,7 @@
       "name": "miho",
       "source": "./",
       "description": "Drive 9miho from your agent: compose and run image/video flows whose outputs land in a library with provenance. Guidance is served by your own 9miho over MCP, so it always matches the server you are talking to.",
-      "version": "0.4.1"
+      "version": "0.4.3"
     }
   ]
 }
