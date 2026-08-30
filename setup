@@ -1,3 +1,8 @@
 #!/bin/sh
 # Register Kumiho Desktop's installed 9miho MCP runtime (idempotent).
-exec python3 "$(dirname "$0")/scripts/setup.py" "$@"
+MIHO_BIN="${HOME}/.kumiho/apps/9miho/bin/9miho"
+if [ ! -f "$MIHO_BIN" ]; then
+  echo "9miho is not installed. Install or repair it in Kumiho Desktop." >&2
+  exit 2
+fi
+exec "$MIHO_BIN" --setup-agent-hosts "$@"

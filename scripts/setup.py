@@ -106,7 +106,9 @@ def _claude_entry(command: McpCommand, url: str) -> dict[str, object]:
     return {"type": "stdio", **_json_entry(command, url)}
 
 
-def _legacy_uv_parts(command: object, args: object, environment: object) -> bool:
+def _legacy_uv_parts(
+    command: object, args: object, environment: object, expected_url: str
+) -> bool:
     return (
         command in {"uv", "uv.exe"}
         and isinstance(args, list)
@@ -117,19 +119,19 @@ def _legacy_uv_parts(command: object, args: object, environment: object) -> bool
         and args[3] == "miho-mcp"
         and isinstance(environment, dict)
         and set(environment) == {"MIHO_SERVER_URL"}
-        and isinstance(environment["MIHO_SERVER_URL"], str)
+        and environment["MIHO_SERVER_URL"] == expected_url
     )
 
 
-def _legacy_json_entry(entry: object) -> bool:
+def _legacy_json_entry(entry: object, expected_url: str) -> bool:
     return (
         isinstance(entry, dict)
         and set(entry) == {"command", "args", "env"}
-        and _legacy_uv_parts(entry["command"], entry["args"], entry["env"])
+        and _legacy_uv_parts(entry["command"], entry["args"], entry["env"], expected_url)
     )
 
 
-def _legacy_opencode_entry(entry: object) -> bool:
+def _legacy_opencode_entry(entry: object, expected_url: str) -> bool:
     if not isinstance(entry, dict) or set(entry) != {
         "type", "command", "environment", "enabled"
     }:
@@ -140,16 +142,16 @@ def _legacy_opencode_entry(entry: object) -> bool:
         and entry["enabled"] is True
         and isinstance(tokens, list)
         and len(tokens) == 5
-        and _legacy_uv_parts(tokens[0], tokens[1:], entry["environment"])
+        and _legacy_uv_parts(tokens[0], tokens[1:], entry["environment"], expected_url)
     )
 
 
-def _legacy_claude_entry(entry: object) -> bool:
+def _legacy_claude_entry(entry: object, expected_url: str) -> bool:
     return (
         isinstance(entry, dict)
         and set(entry) == {"type", "command", "args", "env"}
         and entry["type"] == "stdio"
-        and _legacy_uv_parts(entry["command"], entry["args"], entry["env"])
+        and _legacy_uv_parts(entry["command"], entry["args"], entry["env"], expected_url)
     )
 
 
@@ -232,7 +234,11 @@ def configure_cursor(
 ) -> tuple[Path, str, Path | None]:
     path = home / ".cursor" / "mcp.json"
     state, backup = _replace_json_entry(
-        path, "mcpServers", _json_entry(command, url), _legacy_json_entry, action
+        path,
+        "mcpServers",
+        _json_entry(command, url),
+        lambda entry: _legacy_json_entry(entry, url),
+        action,
     )
     return path, state, backup
 
@@ -248,7 +254,11 @@ def configure_opencode(
     base = Path(configured).expanduser() if configured else home / ".config"
     path = base / "opencode" / "opencode.json"
     state, backup = _replace_json_entry(
-        path, "mcp", _opencode_entry(command, url), _legacy_opencode_entry, action
+        path,
+        "mcp",
+        _opencode_entry(command, url),
+        lambda entry: _legacy_opencode_entry(entry, url),
+        action,
     )
     return path, state, backup
 
@@ -306,7 +316,7 @@ def configure_codex(
     wanted = _json_entry(command, url)
     if current == wanted:
         return path, "current", None
-    is_legacy = _legacy_json_entry(current)
+    is_legacy = _legacy_json_entry(current, url)
     if current is not None and not is_legacy:
         raise SetupError(
             f"{path}: existing [mcp_servers.miho] is user-owned; it was not overwritten"
@@ -385,7 +395,7 @@ def configure_claude(
         current = servers["miho"]
         if current == wanted:
             return path, f"current ({label})", None
-        if not _legacy_claude_entry(current):
+        if not _legacy_claude_entry(current, url):
             raise SetupError(f"{path} ({label}): existing miho entry is user-owned")
         if action != "apply":
             return path, f"drift ({label})", None

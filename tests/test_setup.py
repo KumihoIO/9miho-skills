@@ -151,7 +151,9 @@ class SetupTest(unittest.TestCase):
                         path,
                         "mcpServers",
                         setup._json_entry(command, setup.DEFAULT_URL),
-                        setup._legacy_json_entry,
+                        lambda entry: setup._legacy_json_entry(
+                            entry, setup.DEFAULT_URL
+                        ),
                         "apply",
                     )
 
@@ -192,6 +194,55 @@ class SetupTest(unittest.TestCase):
         backups = list(path.parent.glob("config.toml.9miho-setup*.bak"))
         self.assertEqual(len(backups), 1)
         self.assertEqual(backups[0].read_text(encoding="utf-8"), original)
+
+    def test_codex_legacy_custom_url_is_not_silently_replaced(self) -> None:
+        command = self.install_runtime()
+        path = self.home / ".codex" / "config.toml"
+        path.parent.mkdir(parents=True)
+        custom_url = "http://127.0.0.1:17777"
+        original = (
+            '[mcp_servers.miho]\n'
+            'command = "uv"\n'
+            'args = ["run", "--directory", "C:\\\\Private 9miho", "miho-mcp"]\n\n'
+            '[mcp_servers.miho.env]\n'
+            f'MIHO_SERVER_URL = "{custom_url}"\n'
+        )
+        path.write_text(original, encoding="utf-8")
+
+        self.assertEqual(self.invoke_setup(command), 2)
+
+        self.assertEqual(path.read_text(encoding="utf-8"), original)
+        self.assertEqual(list(path.parent.glob("*.bak")), [])
+
+    def test_codex_legacy_custom_url_migrates_only_when_explicit(self) -> None:
+        command = self.install_runtime()
+        path = self.home / ".codex" / "config.toml"
+        path.parent.mkdir(parents=True)
+        custom_url = "http://127.0.0.1:17777"
+        path.write_text(
+            '[mcp_servers.miho]\n'
+            'command = "uv"\n'
+            'args = ["run", "--directory", "C:\\\\Private 9miho", "miho-mcp"]\n\n'
+            '[mcp_servers.miho.env]\n'
+            f'MIHO_SERVER_URL = "{custom_url}"\n',
+            encoding="utf-8",
+        )
+
+        code = setup.run_setup(
+            home=self.home,
+            command=command,
+            url=custom_url,
+            action="apply",
+            environment=self.environment,
+            include_claude=False,
+            emit=lambda _message: None,
+        )
+
+        self.assertEqual(code, 0)
+        self.assertIn(
+            f'MIHO_SERVER_URL = "{custom_url}"',
+            path.read_text(encoding="utf-8"),
+        )
 
     def test_claude_cli_failure_does_not_block_other_hosts(self) -> None:
         command = self.install_runtime()
@@ -256,8 +307,16 @@ class PublicTreeContractTest(unittest.TestCase):
             json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"],
             json.loads((ROOT / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"],
         ]
-        self.assertEqual(version, "0.4.3")
+        self.assertEqual(version, "0.4.4")
         self.assertEqual(stamps, [version] * len(stamps))
+
+    def test_launchers_use_signed_runtime_without_system_python(self) -> None:
+        unix = (ROOT / "setup").read_text(encoding="utf-8")
+        windows = (ROOT / "setup.cmd").read_text(encoding="utf-8")
+        self.assertIn("--setup-agent-hosts", unix)
+        self.assertIn("--setup-agent-hosts", windows)
+        self.assertNotIn("python", unix.lower())
+        self.assertNotIn("python", windows.lower())
 
     def test_public_storyteller_trigger_includes_webtoon_production(self) -> None:
         body = (ROOT / "miho-storyteller-production" / "SKILL.md").read_text(encoding="utf-8")
