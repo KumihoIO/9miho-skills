@@ -235,6 +235,19 @@ class SetupTest(unittest.TestCase):
 
 
 class PublicTreeContractTest(unittest.TestCase):
+    def test_posix_setup_launcher_is_executable_in_git(self) -> None:
+        tracked = subprocess.run(
+            ["git", "ls-files", "--stage", "--", "setup"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        self.assertTrue(
+            tracked.stdout.startswith("100755 "),
+            "the documented ./setup launcher must be executable in a clean clone",
+        )
+
     def test_all_public_version_stamps_match(self) -> None:
         version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
         stamps = [
