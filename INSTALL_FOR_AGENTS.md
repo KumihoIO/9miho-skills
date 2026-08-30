@@ -1,49 +1,53 @@
 # Install for agents
 
-You are an AI coding agent. The user asked you to set up 9miho skills.
-Follow this exactly, and stop at the first step that fails rather than
-working around it.
+The user asked you to connect these public trigger skills to their installed
+9miho. Stop at the first unsafe condition; do not invent a source-based
+fallback.
 
-## Step 1 — is 9miho running?
+## Step 1 — verify the Kumiho Desktop runtime
 
-```bash
-curl -s http://127.0.0.1:9999/api/healthz
-```
+Check the platform path:
 
-Expect `{"status":"ok"}`. If not, the user must start it (`uv run
-miho-server` in their 9miho checkout). Do not continue without it.
+- Windows: `~/.kumiho/apps/9miho/bin/9miho.exe`
+- macOS/Linux: `~/.kumiho/apps/9miho/bin/9miho`
 
-## Step 2 — is Kumiho up?
+It must be 9miho 0.16.1 or newer. If it is missing or outdated, ask the user
+to install, update, and start 9miho in Kumiho Desktop. The bundled launcher
+checks the required setup capability before invoking it, makes no MCP config
+change on failure, and exits with status 2. Do not substitute a private
+checkout.
 
-If `/api/skills` returns **503**, Kumiho CE is not reachable. 9miho stores
-every asset there; without it nothing registers and nothing runs. The user
-starts it with `kumiho_server` on `127.0.0.1:9190`.
+## Step 2 — preview the MCP registration
 
-## Step 3 — is miho-mcp configured?
+From this skill pack, run `setup.cmd --dry-run` on Windows or
+`./setup --dry-run` on macOS/Linux. The intended entry is always the installed
+binary with `--mcp-stdio` and
+`MIHO_SERVER_URL=http://127.0.0.1:9999`.
 
-Call `list_skills()`. If the tool does not exist, add miho-mcp to the user's
-MCP config (see INSTALL.md) and ask them to restart the session — MCP
-servers are loaded at startup.
+The setup may migrate only the exact legacy entry it previously generated.
+If it reports invalid configuration or an unrecognized existing `miho` entry,
+show the conflict and stop. Do not overwrite it.
 
-## Step 4 — is the pack seeded?
+## Step 3 — register and reload
 
-If `list_skills()` returns no skills, it will say so and name the command.
-Ask the user to run, in their 9miho checkout:
+Run `setup.cmd` or `./setup`, then restart each affected agent host. Use
+`--check` afterward if you need a read-only verification.
 
-```bash
-uv run python scripts/ingest_skills.py
-```
+## Step 4 — confirm bundled guidance
 
-## Step 5 — confirm
+Call `list_skills()`, then `get_skill(task="image")`. The installed runtime
+provisions its version-matched bundled skill pack idempotently on first use;
+there is no manual ingest step.
 
-Call `get_skill(task="image")`. You should get back guidance sections with
-content, not names alone. You are set up.
+If the API returns 503, Kumiho may still be starting behind Desktop; wait
+briefly and retry. If it returns 409, report the named user-managed Kumiho
+item and stop. 9miho refuses to overwrite that item by design.
 
 ## Do not
 
 - Do not guess node type names. `list_catalog` is the only truth.
-- Do not pass `confirm_spend=true` without telling the user what it costs
-  first. It does not authorize the spend either way — the server asks them
-  on a confirm card in the canvas, and only their answer releases the run.
-- Do not copy guidance out of `get_skill` into your own notes for reuse
-  later — it is version-matched to that server and will be wrong elsewhere.
+- Do not pass `confirm_spend=true` without first surfacing the estimate. The
+  user still answers the confirmation card in 9miho.
+- Do not cache guidance from `get_skill` for a later installation; it is
+  version-matched to the runtime serving it.
+- Do not use a source checkout as an installation or recovery workaround.

@@ -19,8 +19,14 @@ or, in Claude Code:
 /plugin install miho@miho
 ```
 
-You also need a running 9miho with `miho-mcp` in your MCP config — see
+You also need 9miho 0.16.1 or newer installed and running in Kumiho Desktop,
+with its MCP runtime registered in your agent host — see
 [INSTALL.md](./INSTALL.md).
+
+For a normal installation, Kumiho Desktop owns both pieces: it installs and
+starts 9miho, and this repo's `setup.cmd`/`./setup` registers that installed
+runtime with `--mcp-stdio`. No 9miho source checkout or manual skill-ingest
+step is required.
 
 ## Skills
 

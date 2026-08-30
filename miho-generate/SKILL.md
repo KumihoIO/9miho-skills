@@ -27,18 +27,17 @@ free text is accepted. `list_skills()` shows what this installation has.
 
 ## If that tool is not there
 
-miho-mcp is not configured. Add it to your MCP config:
+miho-mcp is not configured. Install and start 9miho from Kumiho Desktop,
+then run the setup bundled with this skill pack (`setup.cmd` on Windows or
+`./setup` on macOS/Linux). It registers the installed runtime directly:
 
-```json
-{"mcpServers": {"miho": {
-  "command": "uv",
-  "args": ["run", "--directory", "<path-to-9miho>", "miho-mcp"],
-  "env": {"MIHO_SERVER_URL": "http://127.0.0.1:9999"}
-}}}
-```
+- Windows: `~/.kumiho/apps/9miho/bin/9miho.exe --mcp-stdio`
+- macOS/Linux: `~/.kumiho/apps/9miho/bin/9miho --mcp-stdio`
+- Environment: `MIHO_SERVER_URL=http://127.0.0.1:9999`
 
-Then confirm the 9miho server answers on `/api/healthz`, and that its Kumiho
-is up — 9miho stores every asset there, so without it nothing runs.
+If the runtime is missing, install or launch it from Kumiho Desktop and retry.
+Do not substitute a private source checkout. The installed runtime provisions
+its bundled guidance when `list_skills()` or `get_skill()` first requests it.
 
 ## Two rules that hold even before you fetch anything
 
