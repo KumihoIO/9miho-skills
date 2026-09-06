@@ -2,7 +2,6 @@
 name: miho-photoshoot
 description: Brand and product imagery by mode — studio, lifestyle, hero banner, pin, ad pack, try-on — each a small flow over the same nodes rather than a different model.
 tags: [9miho, photoshoot, product, brand, image, modes, marketing]
-allowed-tools: mcp__miho__get_skill, mcp__miho__list_skills
 ---
 
 # miho-photoshoot

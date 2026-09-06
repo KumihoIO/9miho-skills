@@ -307,7 +307,7 @@ class PublicTreeContractTest(unittest.TestCase):
             json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"],
             json.loads((ROOT / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"],
         ]
-        self.assertEqual(version, "0.4.5")
+        self.assertEqual(version, "0.5.0")
         self.assertEqual(stamps, [version] * len(stamps))
 
     def test_launchers_use_signed_runtime_without_system_python(self) -> None:
@@ -348,6 +348,16 @@ class PublicTreeContractTest(unittest.TestCase):
         body = (ROOT / "miho-storyteller-production" / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("Storyteller Moment or webtoon panel", body)
         self.assertIn("webtoon", body.split("---", 2)[1])
+
+    def test_public_storyteller_triggers_point_at_the_storyteller_task_word(self) -> None:
+        for name in ("miho-storyteller-planning", "miho-storyteller-production"):
+            body = (ROOT / name / "SKILL.md").read_text(encoding="utf-8")
+            self.assertIn('get_skill(task="storyteller")', body, name)
+            self.assertNotIn('task="storyteller-', body, name)
+
+    def test_public_stubs_narrow_no_tools(self) -> None:
+        for path in sorted(ROOT.glob("miho-*/SKILL.md")):
+            self.assertNotIn("allowed-tools", path.read_text(encoding="utf-8"), path.name)
 
     def test_public_user_guidance_has_no_private_default_or_ingest_step(self) -> None:
         paths = [ROOT / "README.md", ROOT / "INSTALL_FOR_AGENTS.md"]

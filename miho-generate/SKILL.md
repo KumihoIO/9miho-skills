@@ -2,7 +2,6 @@
 name: miho-generate
 description: Compose and run 9miho flows that produce images and video — routing a brief to the right node types, validating before spending, and surfacing the spend confirmation rather than answering it.
 tags: [9miho, generate, image, video, movie, edit, subject, flow, spend]
-allowed-tools: mcp__miho__get_skill, mcp__miho__list_skills
 ---
 
 # miho-generate

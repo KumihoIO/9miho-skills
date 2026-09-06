@@ -1,8 +1,7 @@
 ---
 name: miho-storyteller-production
 description: Produce a Storyteller Moment or webtoon panel — read the composed episode context, pin a Direction artifact, compile image/video/dialogue through the generation tools, and let the human answer the spend card.
-tags: [9miho, story, production, video, image, webtoon, spend, dialogue, direction]
-allowed-tools: mcp__miho__get_skill, mcp__miho__list_skills
+tags: [9miho, story, storyteller, canon, production, video, image, webtoon, spend, dialogue, direction]
 ---
 
 # miho-storyteller-production
@@ -18,10 +17,10 @@ expensive.
 ## Do this first
 
 ```
-get_skill(task="storyteller-production")
+get_skill(task="storyteller")
 ```
 
-Add `detail=` for anything specific — `get_skill(task="storyteller-production",
+Add `detail=` for anything specific — `get_skill(task="storyteller",
 detail="…")`. The task word is what you are about to do, not a skill name;
 free text is accepted. `list_skills()` shows what this installation has.
 

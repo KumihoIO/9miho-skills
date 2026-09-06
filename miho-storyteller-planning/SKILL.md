@@ -1,8 +1,7 @@
 ---
 name: miho-storyteller-planning
 description: Plan and edit a Storyteller series through its Living Canon — read before proposing, validate every proposal, save drafts with the concurrency token, and treat approval as the user's decision.
-tags: [9miho, story, storytelling, canon, planning, interview, proposal, draft, approve, subject, video]
-allowed-tools: mcp__miho__get_skill, mcp__miho__list_skills
+tags: [9miho, story, storyteller, storytelling, canon, planning, interview, proposal, draft, approve, subject, video]
 ---
 
 # miho-storyteller-planning
@@ -18,10 +17,10 @@ expensive.
 ## Do this first
 
 ```
-get_skill(task="storyteller-planning")
+get_skill(task="storyteller")
 ```
 
-Add `detail=` for anything specific — `get_skill(task="storyteller-planning",
+Add `detail=` for anything specific — `get_skill(task="storyteller",
 detail="…")`. The task word is what you are about to do, not a skill name;
 free text is accepted. `list_skills()` shows what this installation has.
 
