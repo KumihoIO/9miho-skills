@@ -2,7 +2,6 @@
 name: miho-storyboard
 description: Multi-shot sequences that hold together — plan the shots, keep the subject pinned across all of them, animate selectively, and assemble with lineage intact.
 tags: [9miho, storyboard, sequence, movie, shots, video, continuity]
-allowed-tools: mcp__miho__get_skill, mcp__miho__list_skills
 ---
 
 # miho-storyboard

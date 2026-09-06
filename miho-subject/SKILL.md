@@ -2,7 +2,6 @@
 name: miho-subject
 description: Give a character, product or person a reusable visual identity — register the source photos, derive a fused reference, and pin the kref that every later shot binds to.
 tags: [9miho, subject, character, identity, reference, consistency, image]
-allowed-tools: mcp__miho__get_skill, mcp__miho__list_skills
 ---
 
 # miho-subject

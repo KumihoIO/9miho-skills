@@ -2,7 +2,6 @@
 name: miho-library
 description: Find, inspect and trace assets in the 9miho library — search before generating, pin the right revision, and answer where any output came from via its provenance edges.
 tags: [9miho, library, assets, search, lineage, provenance, revisions]
-allowed-tools: mcp__miho__get_skill, mcp__miho__list_skills
 ---
 
 # miho-library
