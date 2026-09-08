@@ -26,7 +26,7 @@ import subprocess
 import sys
 import tempfile
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Callable, Literal, Sequence
 
@@ -48,6 +48,7 @@ class McpCommand:
     required_path: Path
     required_kind: Literal["file", "directory"]
     mode: Literal["desktop", "source"]
+    human_approvals: bool = False
 
 
 @dataclass(frozen=True)
@@ -89,7 +90,7 @@ def _json_entry(command: McpCommand, url: str) -> dict[str, object]:
     return {
         "command": command.command,
         "args": list(command.args),
-        "env": {"MIHO_SERVER_URL": url},
+        "env": {"MIHO_SERVER_URL": url, **({"MIHO_MCP_SPEND_ANSWER": "1"} if command.human_approvals else {})},
     }
 
 
@@ -97,7 +98,7 @@ def _opencode_entry(command: McpCommand, url: str) -> dict[str, object]:
     return {
         "type": "local",
         "command": [command.command, *command.args],
-        "environment": {"MIHO_SERVER_URL": url},
+        "environment": {"MIHO_SERVER_URL": url, **({"MIHO_MCP_SPEND_ANSWER": "1"} if command.human_approvals else {})},
         "enabled": True,
     }
 
@@ -198,6 +199,19 @@ def _write_json(path: Path, body: dict) -> Path | None:
     return backup
 
 
+def _approval_opt_in(current: object, wanted: dict[str, object]) -> bool:
+    """Only add this opt-in to an otherwise exact known host entry."""
+    if not isinstance(current, dict):
+        return False
+    key = "environment" if "environment" in wanted else "env"
+    expected = wanted.get(key)
+    if not isinstance(expected, dict) or expected.get("MIHO_MCP_SPEND_ANSWER") != "1":
+        return False
+    before = dict(expected)
+    before.pop("MIHO_MCP_SPEND_ANSWER")
+    return current == {**wanted, key: before}
+
+
 def _replace_json_entry(
     path: Path,
     container_name: str,
@@ -216,7 +230,7 @@ def _replace_json_entry(
     current = servers.get("miho")
     if current == wanted:
         return "current", None
-    is_legacy = legacy(current)
+    is_legacy = legacy(current) or _approval_opt_in(current, wanted)
     if has_entry and not is_legacy:
         raise SetupError(
             f"{path}: existing 'miho' entry is user-owned; it was not overwritten"
@@ -278,6 +292,7 @@ def _codex_block(command: McpCommand, url: str) -> str:
             "",
             "[mcp_servers.miho.env]",
             f"MIHO_SERVER_URL = {_toml_string(url)}",
+            *(['MIHO_MCP_SPEND_ANSWER = "1"'] if command.human_approvals else []),
             MANAGED_END,
         )
     )
@@ -317,7 +332,8 @@ def configure_codex(
     if current == wanted:
         return path, "current", None
     is_legacy = _legacy_json_entry(current, url)
-    if current is not None and not is_legacy:
+    is_opt_in = _approval_opt_in(current, wanted)
+    if current is not None and not is_legacy and not is_opt_in:
         raise SetupError(
             f"{path}: existing [mcp_servers.miho] is user-owned; it was not overwritten"
         )
@@ -325,7 +341,13 @@ def configure_codex(
         return path, "drift", None
 
     block = _codex_block(command, url)
-    if is_legacy:
+    if is_opt_in:
+        old_block = _codex_block(replace(command, human_approvals=False), url)
+        if text.count(old_block) != 1:
+            raise SetupError(f"{path}: custom miho layout is user-owned; enable MIHO_MCP_SPEND_ANSWER=1 in its env table")
+        updated = text.replace(old_block, block, 1)
+        state = "enabled human approval forms"
+    elif is_legacy:
         match = LEGACY_CODEX_BLOCK.search(text)
         if not match:
             raise SetupError(
@@ -395,7 +417,7 @@ def configure_claude(
         current = servers["miho"]
         if current == wanted:
             return path, f"current ({label})", None
-        if not _legacy_claude_entry(current, url):
+        if not _legacy_claude_entry(current, url) and not _approval_opt_in(current, wanted):
             raise SetupError(f"{path} ({label}): existing miho entry is user-owned")
         if action != "apply":
             return path, f"drift ({label})", None
@@ -504,6 +526,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     mode.add_argument("--check", action="store_true", help="report drift without writing")
     mode.add_argument("--dry-run", action="store_true", help="show planned changes without writing")
     parser.add_argument("--server-url", default=DEFAULT_URL)
+    parser.add_argument("--human-approvals", action="store_true",
+                        help="enable human-only Canon/spend forms in clients with interactive MCP elicitation")
     parser.add_argument(
         "--source-checkout",
         type=Path,
@@ -520,6 +544,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
     action: Action = "check" if args.check else "dry-run" if args.dry_run else "apply"
     print(f"9miho skills setup ({command.mode}; {action})\n")
+    command = replace(command, human_approvals=args.human_approvals)
     code = run_setup(
         home=home,
         command=command,

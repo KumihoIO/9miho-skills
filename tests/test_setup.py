@@ -6,6 +6,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import tomllib
+from dataclasses import replace
 from pathlib import Path
 
 
@@ -96,6 +98,41 @@ class SetupTest(unittest.TestCase):
         backups = list(path.parent.glob("mcp.json.9miho-setup*.bak"))
         self.assertEqual(len(backups), 1)
         self.assertEqual(backups[0].read_bytes(), original)
+
+    def test_human_approvals_opt_in_updates_managed_entries_idempotently(self) -> None:
+        command = self.install_runtime()
+        self.assertEqual(self.invoke_setup(command), 0)
+        enabled = replace(command, human_approvals=True)
+        self.assertEqual(self.invoke_setup(enabled), 0)
+        paths = [
+            self.home / ".cursor" / "mcp.json",
+            self.home / ".config" / "opencode" / "opencode.json",
+            self.home / ".codex" / "config.toml",
+        ]
+        before = {path: path.read_bytes() for path in paths}
+        backups = sorted(self.home.rglob("*.bak"))
+        self.assertEqual(self.invoke_setup(enabled), 0)
+        self.assertEqual({path: path.read_bytes() for path in paths}, before)
+        self.assertEqual(sorted(self.home.rglob("*.bak")), backups)
+        codex = tomllib.loads(paths[2].read_text(encoding="utf-8"))
+        cursor = json.loads(paths[0].read_text(encoding="utf-8"))
+        opencode = json.loads(paths[1].read_text(encoding="utf-8"))
+        self.assertEqual(codex["mcp_servers"]["miho"]["env"]["MIHO_MCP_SPEND_ANSWER"], "1")
+        self.assertEqual(cursor["mcpServers"]["miho"]["env"]["MIHO_MCP_SPEND_ANSWER"], "1")
+        self.assertEqual(opencode["mcp"]["miho"]["environment"]["MIHO_MCP_SPEND_ANSWER"], "1")
+        self.assertTrue(backups)
+
+    def test_human_approvals_opt_in_preserves_custom_codex_entry(self) -> None:
+        command = self.install_runtime()
+        self.assertEqual(self.invoke_setup(command), 0)
+        path = self.home / ".codex" / "config.toml"
+        custom = path.read_text(encoding="utf-8").replace(
+            'args = ["--mcp-stdio"]', 'args = ["--mcp-stdio", "--custom"]'
+        )
+        path.write_text(custom, encoding="utf-8")
+        self.assertEqual(self.invoke_setup(replace(command, human_approvals=True)), 2)
+        self.assertEqual(path.read_text(encoding="utf-8"), custom)
+        self.assertFalse(list(path.parent.glob("*.bak")))
 
     def test_second_run_is_byte_identical_and_creates_no_new_backup(self) -> None:
         command = self.install_runtime()
@@ -307,7 +344,7 @@ class PublicTreeContractTest(unittest.TestCase):
             json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"],
             json.loads((ROOT / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"],
         ]
-        self.assertEqual(version, "0.5.0")
+        self.assertEqual(version, "0.6.1")
         self.assertEqual(stamps, [version] * len(stamps))
 
     def test_launchers_use_signed_runtime_without_system_python(self) -> None:

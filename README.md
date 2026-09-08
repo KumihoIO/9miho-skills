@@ -38,11 +38,12 @@ step is required.
 | [`miho-storyboard`](./miho-storyboard) | `/miho:miho-storyboard` | Multi-shot sequences that hold together |
 | [`miho-storyteller-planning`](./miho-storyteller-planning) | `/miho:miho-storyteller-planning` | Plan and edit a Storyteller series through its Living Canon |
 | [`miho-storyteller-production`](./miho-storyteller-production) | `/miho:miho-storyteller-production` | Produce a Storyteller Moment or webtoon panel |
+| [`miho-storyteller-text`](./miho-storyteller-text) | `/miho:miho-storyteller-text` | Write web novels, shooting scripts or text storyboards from Storyteller Canon |
 | [`miho-subject`](./miho-subject) | `/miho:miho-subject` | Give a character, product or person a reusable visual identity |
 
 ## Series production, not just single shots
 
-Two of these drive **Storyteller**, where a series is one *Living Canon*
+Three of these drive **Storyteller**, where a series is one *Living Canon*
 document — premise, cast with their visual anchors, relationships that change
 by episode, and **Moments** small enough to produce. A Moment becomes a
 *Direction*: a provider-neutral packet naming intent, performance, blocking,
@@ -50,12 +51,29 @@ camera and audio, which is registered as a pinned artefact and is what the
 video leg consumes. What comes back is a **Take**, one candidate among
 several — generating it does not make it the story's.
 
-Two gates in that loop belong to the person, not to the agent, and neither
-can be answered by a tool call: **Canon approval** (a confirmation card bound
-to the exact document, which the agent opens and cannot answer) and the
+Two gates in that loop belong to the person, not to the agent. A tool can
+carry the person's elicited response, but cannot supply its own decision: **Canon approval** (a confirmation card bound
+to the exact document, which the person answers in 9miho or a supported
+client's confirmation form) and the
 **spend confirmation** on every paid run. Choosing which Take is the approved
 one is the same kind of act, made in 9miho rather than in the transcript. An
 agent presents candidates and asks; the human decides.
+
+The text-production skill also prepares source-pinned writing context and
+submits externally authored web novels or screenplays to Text Studio for
+rendering and editorial review, without starting another model run. It needs
+a runtime exposing `prepare_story_text` and `submit_story_text`; installing
+these pointers alone does not add server tools.
+
+## Human approvals in your conversation
+
+On a client that shows MCP elicitation forms to its user, opt in with
+`setup.cmd --human-approvals` (Windows) or `./setup --human-approvals`.
+Restart the MCP connection. This enables `answer_canon_approval_request` and
+`answer_spend_request` on runtimes that provide them. Neither accepts an
+approve/deny tool argument: the person answers the form. Unsupported clients
+and dismissed forms leave cards pending. The embedded 9miho agent keeps this
+transport disabled. Existing custom host configurations are preserved by setup.
 
 ## These are pointers
 
