@@ -24,6 +24,21 @@ Add `detail=` for anything specific — `get_skill(task="storyteller",
 detail="…")`. The task word is what you are about to do, not a skill name;
 free text is accepted. `list_skills()` shows what this installation has.
 
+## Keep manuscripts and Canon developing together
+
+For episode authoring or substantive revisions, include creation or reconciliation
+of production Moments after reviewing the manuscript. Fetch the runtime workflow:
+
+```
+get_skill(task="storyteller", detail="reviewed manuscript to production Moments, state changes, continuity and payoff")
+```
+
+Carry the reviewed choices, character changes and causal connections into a
+validated Canon draft. Check the prose against those Moments again before calling
+the episode complete. Reuse existing Moment identities when revising; keep source
+pins and draft versus approved status distinct. A prose-only request or copyedit
+does not require a production plan. Canon approval and paid media remain separate.
+
 ## If that tool is not there
 
 miho-mcp is not configured. Install and start 9miho from Kumiho Desktop,

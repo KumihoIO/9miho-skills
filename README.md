@@ -65,6 +65,12 @@ rendering and editorial review, without starting another model run. It needs
 a runtime exposing `prepare_story_text` and `submit_story_text`; installing
 these pointers alone does not add server tools.
 
+For episode writing, the workflow continues from the reviewed manuscript to
+production Moments and a validated Canon draft, then checks prose and Canon
+against each other. This preserves character changes, causal connections and
+partial payoffs for the next episode. Existing Moments are reconciled when prose
+changes. A copyedit or an explicitly prose-only request can stay within that scope.
+
 ## Human approvals in your conversation
 
 On a client that shows MCP elicitation forms to its user, opt in with
