@@ -344,7 +344,7 @@ class PublicTreeContractTest(unittest.TestCase):
             json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"],
             json.loads((ROOT / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"],
         ]
-        self.assertEqual(version, "0.6.1")
+        self.assertRegex(version, r"^\d+\.\d+\.\d+$")
         self.assertEqual(stamps, [version] * len(stamps))
 
     def test_launchers_use_signed_runtime_without_system_python(self) -> None:

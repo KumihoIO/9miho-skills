@@ -63,7 +63,10 @@ The text-production skill also prepares source-pinned writing context and
 submits externally authored web novels or screenplays to Text Studio for
 rendering and editorial review, without starting another model run. It needs
 a runtime exposing `prepare_story_text` and `submit_story_text`; installing
-these pointers alone does not add server tools.
+these pointers alone does not add server tools. On supporting runtimes, existing
+or translated novels can use explicit adaptation mode for editorial review, and
+`export_story_text` exports a retained manuscript as DOCX without another model
+run. Retrieve the version-matched instructions before using these capabilities.
 
 For episode writing, the workflow continues from the reviewed manuscript to
 production Moments and a validated Canon draft, then checks prose and Canon
@@ -80,6 +83,12 @@ Restart the MCP connection. This enables `answer_canon_approval_request` and
 approve/deny tool argument: the person answers the form. Unsupported clients
 and dismissed forms leave cards pending. The embedded 9miho agent keeps this
 transport disabled. Existing custom host configurations are preserved by setup.
+
+Runtimes with fieldless confirmation forms use the human's native Confirm/Submit
+as the decision, with no extra approval checkbox. The form shows the held Canon
+summary or itemized spend estimate. Decline denies; Cancel leaves it pending.
+Button labels belong to the host. Updating these pointers alone cannot change
+an older runtime's form; update/reconnect the MCP runtime to load its changes.
 
 ## These are pointers
 

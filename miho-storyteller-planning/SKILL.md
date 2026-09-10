@@ -58,8 +58,11 @@ its bundled guidance when `list_skills()` or `get_skill()` first requests it.
 **You cannot confirm spend. Only the user can.** `run_graph` refuses a graph
 containing billable nodes unless `confirm_spend=true`, and the refusal carries
 an itemized estimate. That flag is a fail-fast, not an authorization: the
-server shows the user a confirm card in their canvas and runs nothing until
-they accept it there.
+user must approve the held request before anything runs. When available,
+`answer_spend_request(request_id)` carries that same itemized card into this
+conversation; otherwise the user answers it in the canvas. Never send an agent's
+approve/deny value. Follow the approved request with `get_run`, not a second
+`run_graph` call.
 
 **`list_catalog` is the only truth about node types.** Never name a type you
 have not listed this session.
