@@ -39,6 +39,15 @@ the episode complete. Reuse existing Moment identities when revising; keep sourc
 pins and draft versus approved status distinct. A prose-only request or copyedit
 does not require a production plan. Canon approval and paid media remain separate.
 
+## Existing novels and Word export
+
+For existing or translated novels, fetch `get_skill(task="text",
+detail="import an existing or translated novel, adaptation review")` and inspect
+the runtime's prepare/submit tools for `authoring_mode`. Preserve the supplied
+prose; use the same explicit adaptation mode in prepare and submit when supported.
+For a retained manuscript's DOCX, fetch the runtime's Word export guidance and
+use `export_story_text` when exposed. Installing this pointer does not add tools.
+
 ## If that tool is not there
 
 miho-mcp is not configured. Install and start 9miho from Kumiho Desktop,
@@ -58,8 +67,11 @@ its bundled guidance when `list_skills()` or `get_skill()` first requests it.
 **You cannot confirm spend. Only the user can.** `run_graph` refuses a graph
 containing billable nodes unless `confirm_spend=true`, and the refusal carries
 an itemized estimate. That flag is a fail-fast, not an authorization: the
-server shows the user a confirm card in their canvas and runs nothing until
-they accept it there.
+user must approve the held request before anything runs. When available,
+`answer_spend_request(request_id)` carries that same itemized card into this
+conversation; otherwise the user answers it in the canvas. Never send an agent's
+approve/deny value. Follow the approved request with `get_run`, not a second
+`run_graph` call.
 
 **`list_catalog` is the only truth about node types.** Never name a type you
 have not listed this session.
