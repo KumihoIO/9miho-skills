@@ -40,6 +40,7 @@ step is required.
 | [`miho-storyteller-production`](./miho-storyteller-production) | `/miho:miho-storyteller-production` | Produce a Storyteller Moment or webtoon panel |
 | [`miho-storyteller-text`](./miho-storyteller-text) | `/miho:miho-storyteller-text` | Write web novels, shooting scripts or text storyboards from Storyteller Canon |
 | [`miho-subject`](./miho-subject) | `/miho:miho-subject` | Give a character, product or person a reusable visual identity |
+| [`miho-webtoon-layout`](./miho-webtoon-layout) | `/miho:miho-webtoon-layout` | Compose generated, approved 9miho webtoon panels |
 
 ## Series production, not just single shots
 
