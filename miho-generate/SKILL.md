@@ -24,6 +24,13 @@ Add `detail=` for anything specific — `get_skill(task="generate",
 detail="…")`. The task word is what you are about to do, not a skill name;
 free text is accepted. `list_skills()` shows what this installation has.
 
+For multi-cut video with a user-supplied image, ask the installed skill for
+reference registration, revision pinning, and the current variant's image
+handling before wiring the graph. Bind the image only to shots that actually
+depict that subject; count every paid alternative in the estimate, and plan
+finished runtime from selected sequential cuts rather than take count. Add
+exact informational text during editing when spelling matters.
+
 ## If that tool is not there
 
 miho-mcp is not configured. Install and start 9miho from Kumiho Desktop,
