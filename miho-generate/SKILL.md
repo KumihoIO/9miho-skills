@@ -31,6 +31,13 @@ depict that subject; count every paid alternative in the estimate, and plan
 finished runtime from selected sequential cuts rather than take count. Add
 exact informational text during editing when spelling matters.
 
+For a requested video ratio such as 9:16, inspect the chosen catalog variant's
+live config schema and set its supported aspect field on every paid video node.
+Aspect words in the prompt alone do not configure the output. Check the saved
+node controls before the spend request and the rendered clip dimensions before
+editing; if the ratio is wrong, correct the config and obtain a new estimate
+and human approval for any rerender.
+
 ## If that tool is not there
 
 miho-mcp is not configured. Install and start 9miho from Kumiho Desktop,
